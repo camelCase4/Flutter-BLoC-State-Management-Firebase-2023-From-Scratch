@@ -36,6 +36,10 @@ dependencies:
   hydrated_bloc: ^9.1.2
   path_provider: ^2.1.1
   intl: ^0.18.1
+  firebase_core: ^2.16.0
+  firebase_auth: ^4.10.0
+  get_storage: ^2.1.1
+  cloud_firestore: ^4.9.2
 
 dev_dependencies:
   flutter_lints: ^2.0.0
