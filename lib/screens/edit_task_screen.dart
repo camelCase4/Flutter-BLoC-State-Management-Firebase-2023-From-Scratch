@@ -5,22 +5,27 @@ import 'package:tasks_app/services/id_generator.dart';
 import '../blocs/taskbloc/tasks_bloc.dart';
 import '../models/task.dart';
 
-class AddTaskHud extends StatelessWidget {
-  const AddTaskHud({
+class EditTaskScreen extends StatelessWidget {
+  final Task oldTask;
+
+  const EditTaskScreen({
     super.key,
+    required this.oldTask,
   });
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController titleController = TextEditingController();
-    TextEditingController descriptionController = TextEditingController();
+    TextEditingController titleController =
+        TextEditingController(text: oldTask.title);
+    TextEditingController descriptionController =
+        TextEditingController(text: oldTask.description);
 
     return Column(children: [
       const SizedBox(
         height: 5,
       ),
       const Text(
-        'Add Task',
+        'Edit Task',
         style: TextStyle(fontSize: 18),
       ),
       const SizedBox(
@@ -59,16 +64,23 @@ class AddTaskHud extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              var task = Task(
+              var editedTask = Task(
                 title: titleController.text,
                 description: descriptionController.text,
-                id: GUIDGen.generate(),
+                id: oldTask.id,
+                isDone: false,
+                isFavourite: oldTask.isFavourite,
                 date: DateTime.now().toString(),
               );
-              context.read<TasksBloc>().add(AddTask(task: task));
+              context.read<TasksBloc>().add(
+                    EditTask(
+                      oldTask: oldTask,
+                      newTask: editedTask,
+                    ),
+                  );
               Navigator.pop(context);
             },
-            child: const Text('Add'),
+            child: const Text('Save'),
           ),
         ],
       ),

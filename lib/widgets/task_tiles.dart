@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:tasks_app/screens/edit_task_screen.dart';
 
 import '../blocs/taskbloc/tasks_bloc.dart';
 import '../models/task.dart';
@@ -20,6 +21,25 @@ class TaskTiles extends StatelessWidget {
         : ctx.read<TasksBloc>().add(RemoveTask(task: task));
   }
 
+  void _editTask(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => SingleChildScrollView(
+        child: Container(
+          child: Padding(
+            //padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: EditTaskScreen(
+              oldTask: task,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -30,7 +50,9 @@ class TaskTiles extends StatelessWidget {
           Expanded(
             child: Row(
               children: [
-                const Icon(Icons.star_outline),
+                task.isFavourite == false
+                    ? const Icon(Icons.star_outline)
+                    : const Icon(Icons.star),
                 const SizedBox(
                   width: 10,
                 ),
@@ -49,7 +71,8 @@ class TaskTiles extends StatelessWidget {
                       ),
                       Text(
                         //DateTime.now().toString(),
-                        DateFormat('dd-MM-yyyy | hh:mm').format(DateTime.now()),
+                        DateFormat('dd-MM-yyyy | hh:mm')
+                            .format(DateTime.parse(task.date)),
                       ),
                     ],
                   ),
@@ -71,8 +94,19 @@ class TaskTiles extends StatelessWidget {
                 width: 10,
               ),
               PopUpMenuDisplay(
-                  task: task,
-                  cancelOrDeleteCallback: () => _removeOrDelete(context, task)),
+                task: task,
+                cancelOrDeleteCallback: () => _removeOrDelete(context, task),
+                likeOrDislike: () => context.read<TasksBloc>().add(
+                      MarkFavoriteOrUnfavoriteTask(task: task),
+                    ),
+                editTaskCallBack: () {
+                  Navigator.of(context).pop();
+                  _editTask(context);
+                },
+                restoreTaskCallBack: () => context.read<TasksBloc>().add(
+                      RestoreTask(task: task),
+                    ),
+              ),
             ],
           )
         ],
